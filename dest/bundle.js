@@ -44,11 +44,13 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	var _jquery = __webpack_require__(1);
 
 	var _jquery2 = _interopRequireDefault(_jquery);
+
+	var _electron = __webpack_require__(2);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -59,6 +61,9 @@
 	  if (timer === undefined) {
 	    console.log("start");
 	    // タイマースタート
+	    var n = new Notification("Taslog", {
+	      body: 'タイマースタート！'
+	    });
 	    timer = setInterval(function () {
 	      time++;
 	      (0, _jquery2.default)("#timer").text(time);
@@ -79,14 +84,14 @@
 	    var month = nObj.getMonth() + 1;
 	    var date = nObj.getDate();
 	    // テーブルに表示
-	    (0, _jquery2.default)("#table").append("<tr><td>" + month + "月" + date + "日</td><td>" + time + "秒</td></tr>");
+	    (0, _jquery2.default)("#table").append('<tr><td>' + month + '月' + date + '日</td><td>' + time + '秒</td></tr>');
 	    data.push({
 	      time: time,
 	      name: "テスト"
 	    });
 	    localStorage.setItem("hoge", JSON.stringify(data));
 	    var n = new Notification("Taslog", {
-	      body: time + "秒を記録しました。"
+	      body: time + '秒を記録しました。'
 	    });
 
 	    // タイマーリセット
@@ -115,6 +120,10 @@
 	    }
 	  }
 	});
+
+	// ショートカットキーイベントバインド
+	_electron.ipcRenderer.on('menu-start', start);
+	_electron.ipcRenderer.on('menu-stop', stop);
 
 /***/ },
 /* 1 */
@@ -9952,6 +9961,12 @@
 	return jQuery;
 	}));
 
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	module.exports = require("electron");
 
 /***/ }
 /******/ ]);

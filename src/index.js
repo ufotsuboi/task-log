@@ -1,4 +1,5 @@
 import $ from 'jquery'
+import { ipcRenderer } from 'electron'
 
 let timer;
 let time = 0;
@@ -7,6 +8,9 @@ function start() {
   if (timer === undefined) {
     console.log("start");
     // タイマースタート
+    var n = new Notification("Taslog", {
+      body: `タイマースタート！`,
+    });
     timer = setInterval(() => {
       time++;
       $("#timer").text(time);
@@ -63,3 +67,7 @@ $(window).keydown(function(e){
     }
   }
 });
+
+// ショートカットキーイベントバインド
+ipcRenderer.on('menu-start', start);
+ipcRenderer.on('menu-stop', stop);
