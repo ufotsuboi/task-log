@@ -72,6 +72,7 @@
 
 	function stop() {
 	  if (timer !== undefined) {
+	    var data = JSON.parse(localStorage.getItem("hoge")) || [];
 	    console.log("stop", time);
 	    // 現在の日付取得
 	    var nObj = new Date();
@@ -79,6 +80,14 @@
 	    var date = nObj.getDate();
 	    // テーブルに表示
 	    (0, _jquery2.default)("#table").append("<tr><td>" + month + "月" + date + "日</td><td>" + time + "秒</td></tr>");
+	    data.push({
+	      time: time,
+	      name: "テスト"
+	    });
+	    localStorage.setItem("hoge", JSON.stringify(data));
+	    var n = new Notification("Taslog", {
+	      body: time + "秒を記録しました。"
+	    });
 
 	    // タイマーリセット
 	    time = 0;
