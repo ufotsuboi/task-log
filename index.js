@@ -29,7 +29,6 @@ app.on('ready', () => {
   var appIcon = new Tray(__dirname + '/icon.png');
   var contextMenu = Menu.buildFromTemplate([
     {label: 'レポート', accelerator: 'Command+L', click: () => {
-      mainWindow.reload();
       mainWindow.show();
     }},
     {label: '隠す', accelerator: 'Command+H', click: () => {
