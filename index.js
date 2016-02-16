@@ -29,6 +29,7 @@ app.on('ready', () => {
   var appIcon = new Tray(__dirname + '/icon.png');
   var contextMenu = Menu.buildFromTemplate([
     {label: 'レポート', accelerator: 'Command+L', click: () => {
+      mainWindow.reload();
       mainWindow.show();
     }},
     {label: '隠す', accelerator: 'Command+H', click: () => {
@@ -52,6 +53,7 @@ app.on('ready', () => {
   });
   globalShortcut.register('ctrl+0', () => {
     mainWindow.webContents.send('menu-stop');
+    mainWindow.reload();
   });
 
   mainWindow = new BrowserWindow({width: 800, height: 600, show: false});
