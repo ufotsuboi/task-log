@@ -56,13 +56,18 @@
 
 	var timer = undefined;
 	var time = 0;
+	var name = 1;
 
-	function start() {
+	function start(sender) {
+	  var id = arguments.length <= 1 || arguments[1] === undefined ? 1 : arguments[1];
+
 	  if (timer === undefined) {
 	    console.log("start");
+	    console.log(id);
+	    name = id;
 	    // タイマースタート
 	    var n = new Notification("Taslog", {
-	      body: 'タイマースタート！'
+	      body: 'タスク' + name + 'の計測開始'
 	    });
 	    timer = setInterval(function () {
 	      time++;
@@ -75,27 +80,30 @@
 	  }
 	}
 
-	function stop() {
+	function stop(sender) {
 	  if (timer !== undefined) {
-	    var data = JSON.parse(localStorage.getItem("hoge")) || [];
-	    console.log("stop", time);
 	    // 現在の日付取得
 	    var nObj = new Date();
 	    var month = nObj.getMonth() + 1;
 	    var date = nObj.getDate();
+	    var key = month + '/' + date;
+	    var data = JSON.parse(localStorage.getItem(key)) || [];
+	    console.log("stop", time);
 	    // テーブルに表示
 	    (0, _jquery2.default)("#table").append('<tr><td>' + month + '月' + date + '日</td><td>' + time + '秒</td></tr>');
 	    data.push({
 	      time: time,
-	      name: "テスト"
+	      name: name,
+	      key: key
 	    });
-	    localStorage.setItem("hoge", JSON.stringify(data));
+	    localStorage.setItem(key, JSON.stringify(data));
 	    var n = new Notification("Taslog", {
-	      body: time + '秒を記録しました。'
+	      body: 'タスク' + name + 'を' + time + '秒記録'
 	    });
 
 	    // タイマーリセット
 	    time = 0;
+	    name = 1;
 	    (0, _jquery2.default)("#timer").text(time);
 	    clearInterval(timer);
 	    timer = undefined;

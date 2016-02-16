@@ -10,50 +10,63 @@ const globalShortcut = electron.globalShortcut;
 var currentURL = 'file://' + __dirname + '/index.html';
 
 // クラッシュレポート
-require('crash-reporter').start();
+//require('crash-reporter').start();
 
 let mainWindow = null;
-app.on('window-all-closed', () => {
-  if (process.platform != 'darwin') {
-    app.quit();
-  }
-});
+let forceQuit = false;
 
 app.dock.hide();
+app.on('window-all-closed', () => {
+  app.quit();
+});
+
+app.on('will-quit', function () {
+  mainWindow = null;
+});
+
+
 app.on('ready', () => {
   var appIcon = new Tray(__dirname + '/icon.png');
   var contextMenu = Menu.buildFromTemplate([
-    {label: 'スタート', accelerator: 'Command+S', click: () => {
-      mainWindow.webContents.send('menu-start');
+    {label: 'レポート', accelerator: 'Command+L', click: () => {
+      mainWindow.show();
     }},
-    {label: 'ストップ', accelerator: 'Command+L', click: () => {
-      mainWindow.webContents.send('menu-stop');
+    {label: '隠す', accelerator: 'Command+H', click: () => {
+      mainWindow.hide();
     }},
     {label: '終了', accelerator: 'Command+Q', click: () => {
+      globalShortcut.unregisterAll();
       app.quit();
     }},
   ]);
   appIcon.setContextMenu(contextMenu);
 
-  globalShortcut.register('ctrl+s', () => {
-    mainWindow.webContents.send('menu-start');
+  globalShortcut.register('ctrl+1', () => {
+    mainWindow.webContents.send('menu-start', 1);
   });
-  globalShortcut.register('ctrl+l', () => {
+  globalShortcut.register('ctrl+2', () => {
+    mainWindow.webContents.send('menu-start', 2);
+  });
+  globalShortcut.register('ctrl+3', () => {
+    mainWindow.webContents.send('menu-start', 3);
+  });
+  globalShortcut.register('ctrl+0', () => {
     mainWindow.webContents.send('menu-stop');
   });
 
   mainWindow = new BrowserWindow({width: 800, height: 600, show: false});
-  mainWindow.loadUrl(currentURL);
+  mainWindow.loadURL(currentURL);
 
-  // デベロッパーツールを表示
-  // 不要であればコメントアウト
-  mainWindow.toggleDevTools();
-
-  mainWindow.on('closed', () => {
-    mainWindow = null;
+  mainWindow.on('close', e => {
+    if (!forceQuit) {
+      e.preventDefault();
+      mainWindow.hide();
+    } else {
+      mainWindow = null;
+    }
   });
-});
 
-app.on('will-quit', function() {
-  globalShortcut.unregisterAll();
+  app.on('before-quit', function (e) {
+    forceQuit = true;
+  });
 });
