@@ -62,8 +62,6 @@
 	  var id = arguments.length <= 1 || arguments[1] === undefined ? 1 : arguments[1];
 
 	  if (timer === undefined) {
-	    console.log("start");
-	    console.log(id);
 	    name = id;
 	    // タイマースタート
 	    var n = new Notification("Taslog", {
@@ -73,10 +71,6 @@
 	      time++;
 	      (0, _jquery2.default)("#timer").text(time);
 	    }, 1000);
-
-	    // ボタンの処理
-	    (0, _jquery2.default)("#start").hide();
-	    (0, _jquery2.default)("#stop").show();
 	  }
 	}
 
@@ -86,11 +80,8 @@
 	    var nObj = new Date();
 	    var month = nObj.getMonth() + 1;
 	    var date = nObj.getDate();
-	    var key = month + '/' + date;
+	    var key = month + '-' + date;
 	    var data = JSON.parse(localStorage.getItem(key)) || [];
-	    console.log("stop", time);
-	    // テーブルに表示
-	    (0, _jquery2.default)("#table").append('<tr><td>' + month + '月' + date + '日</td><td>' + time + '秒</td></tr>');
 	    data.push({
 	      time: time,
 	      name: name,
@@ -107,31 +98,44 @@
 	    (0, _jquery2.default)("#timer").text(time);
 	    clearInterval(timer);
 	    timer = undefined;
-
-	    // ボタンの処理
-	    (0, _jquery2.default)("#start").show();
-	    (0, _jquery2.default)("#stop").hide();
 	  }
 	}
-
-	// ボタンイベントバインド
-	(0, _jquery2.default)("#start").on('click', start);
-	(0, _jquery2.default)("#stop").on('click', stop);
-
-	// キーボードイベントバインド
-	(0, _jquery2.default)(window).keydown(function (e) {
-	  if (event.ctrlKey) {
-	    if (e.keyCode === 83) {
-	      start();
-	    } else if (e.keyCode === 76) {
-	      stop();
-	    }
-	  }
-	});
 
 	// ショートカットキーイベントバインド
 	_electron.ipcRenderer.on('menu-start', start);
 	_electron.ipcRenderer.on('menu-stop', stop);
+
+	(0, _jquery2.default)(function () {
+	  var nObj = new Date();
+
+	  var _loop = function _loop() {
+	    month = nObj.getMonth() + 1;
+	    date = nObj.getDate();
+
+	    var key = month + '-' + date;
+	    var data = JSON.parse(localStorage.getItem(key)) || null;
+	    nObj.setDate(nObj.getDate() - 1);
+
+	    if (data === null) return 'continue';
+	    var result = {
+	      1: 0, 2: 0, 3: 0, sum: 0
+	    };
+	    data.forEach(function (v) {
+	      result[v.name] += v.time;
+	      result.sum += v.time;
+	    });
+	    (0, _jquery2.default)("#table").append('<tr><td>' + month + '月' + date + '日</td><td>' + result[1] + '秒</td><td>' + (result[1] / result.sum * 100).toFixed(2) + '％</td><td>' + result[2] + '秒</td><td>' + (result[2] / result.sum * 100).toFixed(2) + '％</td><td>' + result[3] + '秒</td><td>' + (result[3] / result.sum * 100).toFixed(2) + '％</td><td>' + result.sum + '</td></tr>');
+	  };
+
+	  for (var i = 0; i < 14; i++) {
+	    var month;
+	    var date;
+
+	    var _ret = _loop();
+
+	    if (_ret === 'continue') continue;
+	  }
+	});
 
 /***/ },
 /* 1 */
